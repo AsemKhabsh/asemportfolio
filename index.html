@@ -76,7 +76,7 @@
 
         <div class="bento-grid">
             <!-- Main Card - Headline -->
-            <div class="bento-card bento-main" data-aos>
+            <div class="bento-card bento-main" data-aos="fade-right">
                 <span class="hero-tagline">
                     <i class="bi bi-stars"></i>
                     حول أفكارك إلى واقع رقمي
@@ -101,7 +101,7 @@
             </div>
 
             <!-- Status Card -->
-            <div class="bento-card bento-side status-card" data-aos>
+            <div class="bento-card bento-side status-card" data-aos="fade-left">
                 <div class="status-indicator">
                     <span class="status-dot"></span>
                     متاح للعمل
@@ -110,14 +110,14 @@
             </div>
 
             <!-- Profile Card -->
-            <div class="bento-card bento-side profile-card" data-aos>
+            <div class="bento-card bento-side profile-card" data-aos="zoom-in">
                 <img src="images/logo.png" alt="عاصم خبش" class="profile-image">
                 <h3 class="profile-name">عاصم خبش</h3>
                 <p class="profile-title">Frontend & Android Developer</p>
             </div>
 
             <!-- Tech Stack Card -->
-            <div class="bento-card bento-full" data-aos>
+            <div class="bento-card bento-full" data-aos="fade-up">
                 <div class="tech-marquee">
                     <div class="tech-track">
                         <div class="tech-item"><i class="bi bi-filetype-html"></i> HTML5</div>
@@ -142,7 +142,7 @@
             </div>
 
             <!-- Stats Cards -->
-            <div class="bento-card bento-third" data-aos>
+            <div class="bento-card bento-third" data-aos="flip-up">
                 <div class="stats-grid">
                     <div class="stat-item">
                         <div class="stat-number">+3</div>
@@ -155,7 +155,7 @@
                 </div>
             </div>
 
-            <div class="bento-card bento-third" data-aos>
+            <div class="bento-card bento-third" data-aos="flip-up">
                 <div class="stats-grid">
                     <div class="stat-item">
                         <div class="stat-number">100%</div>
@@ -168,7 +168,7 @@
                 </div>
             </div>
 
-            <div class="bento-card bento-third" data-aos>
+            <div class="bento-card bento-third" data-aos="flip-up">
                 <div
                     style="display: flex; flex-direction: column; justify-content: center; height: 100%; text-align: center;">
                     <i class="bi bi-geo-alt"
@@ -481,7 +481,7 @@
         </div>
 
         <div class="testimonials-container">
-            <div class="testimonial-card" data-aos>
+            <div class="testimonial-card" data-aos="zoom-in">
                 <div class="testimonial-stars">
                     <i class="bi bi-star-fill"></i>
                     <i class="bi bi-star-fill"></i>
@@ -514,7 +514,7 @@
 
         <div class="contact-grid">
             <!-- Contact Info -->
-            <div class="contact-info" data-aos>
+            <div class="contact-info" data-aos="fade-right">
                 <div class="contact-item">
                     <div class="contact-icon">
                         <i class="bi bi-envelope-fill"></i>
@@ -565,7 +565,7 @@
             </div>
 
             <!-- Contact Form -->
-            <form class="contact-form" action="https://formspree.io/f/YOUR_FORM_ID" method="POST" data-aos>
+            <form class="contact-form" action="https://formspree.io/f/YOUR_FORM_ID" method="POST" data-aos="fade-left">
                 <div class="form-group">
                     <label for="name" class="form-label">الاسم الكامل</label>
                     <input type="text" id="name" name="name" class="form-input" placeholder="أدخل اسمك" required>
@@ -603,7 +603,7 @@
 
     <!-- Scripts -->
     <script>
-        // Update local time
+        // ===== Update Local Time =====
         function updateTime() {
             const now = new Date();
             const timeString = now.toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit', hour12: true });
@@ -613,23 +613,119 @@
         updateTime();
         setInterval(updateTime, 60000);
 
-        // Simple scroll animations
+        // ===== Staggered Scroll Reveal System =====
+        function applyStaggerDelays() {
+            const grids = [
+                { selector: '.services-grid', childSelector: '.service-card' },
+                { selector: '.portfolio-grid', childSelector: '.portfolio-card' },
+                { selector: '.social-links', childSelector: '.social-link' },
+            ];
+            grids.forEach(({ selector, childSelector }) => {
+                const container = document.querySelector(selector);
+                if (!container) return;
+                container.querySelectorAll(childSelector).forEach((child, i) => {
+                    child.style.setProperty('--aos-delay', `${i * 100}ms`);
+                });
+            });
+        }
+        applyStaggerDelays();
+
+        // Enhanced IntersectionObserver for scroll reveals
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     entry.target.classList.add('aos-animate');
                 }
             });
-        }, { threshold: 0.1 });
+        }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
 
         document.querySelectorAll('[data-aos]').forEach(el => observer.observe(el));
 
-        // Navbar scroll effect
+        // ===== Animated Stat Counters =====
+        function animateCounter(el) {
+            const text = el.textContent.trim();
+            // Match patterns: +3, 100%, 24/7, etc.
+            const match = text.match(/^([+]?)(\d+)(.*)$/);
+            if (!match) return;
+            const prefix = match[1];
+            const target = parseInt(match[2]);
+            const suffix = match[3];
+            const duration = 1500;
+            const startTime = performance.now();
+
+            function update(currentTime) {
+                const elapsed = currentTime - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                // Ease out cubic
+                const eased = 1 - Math.pow(1 - progress, 3);
+                const current = Math.round(eased * target);
+                el.textContent = prefix + current + suffix;
+                if (progress < 1) requestAnimationFrame(update);
+            }
+            requestAnimationFrame(update);
+        }
+
+        const counterObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    animateCounter(entry.target);
+                    counterObserver.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.5 });
+
+        document.querySelectorAll('.stat-number').forEach(el => counterObserver.observe(el));
+
+        // ===== Parallax Hero Glows on Mouse Move =====
+        const heroSection = document.querySelector('.hero-section');
+        const glows = document.querySelectorAll('.hero-bg-glow');
+
+        if (heroSection && glows.length) {
+            heroSection.addEventListener('mousemove', (e) => {
+                const rect = heroSection.getBoundingClientRect();
+                const x = (e.clientX - rect.left) / rect.width - 0.5;
+                const y = (e.clientY - rect.top) / rect.height - 0.5;
+
+                glows.forEach((glow, i) => {
+                    const factor = (i + 1) * 30;
+                    glow.style.transform = `translate(${x * factor}px, ${y * factor}px)`;
+                });
+            });
+
+            heroSection.addEventListener('mouseleave', () => {
+                glows.forEach(glow => {
+                    glow.style.transform = '';
+                });
+            });
+        }
+
+        // ===== Hero Tagline Typing Effect =====
+        const taglineEl = document.querySelector('.hero-tagline');
+        if (taglineEl) {
+            // Get just the text node (skip the icon)
+            const textNodes = [...taglineEl.childNodes].filter(n => n.nodeType === Node.TEXT_NODE && n.textContent.trim());
+            if (textNodes.length) {
+                const fullText = textNodes[0].textContent.trim();
+                textNodes[0].textContent = '';
+                let charIndex = 0;
+                function typeChar() {
+                    if (charIndex < fullText.length) {
+                        textNodes[0].textContent += fullText[charIndex];
+                        charIndex++;
+                        setTimeout(typeChar, 50);
+                    }
+                }
+                // Start typing after a short delay for the page to settle
+                setTimeout(typeChar, 800);
+            }
+        }
+
+        // ===== Navbar Scroll Effect =====
         window.addEventListener('scroll', () => {
             updateNavbarBackground();
         });
 
-        // Active nav link
+        // ===== Active Nav Link on Scroll =====
         const sections = document.querySelectorAll('section[id]');
         window.addEventListener('scroll', () => {
             const scrollY = window.pageYOffset;
@@ -646,7 +742,7 @@
             });
         });
 
-        // Mobile menu toggle
+        // ===== Mobile Menu Toggle =====
         const navToggle = document.querySelector('.nav-toggle');
         const navMenu = document.querySelector('.nav-menu');
 
@@ -658,7 +754,6 @@
                 navToggle.classList.toggle('active');
             });
 
-            // Close menu when clicking on a link
             navMenu.querySelectorAll('.nav-link').forEach(link => {
                 link.addEventListener('click', () => {
                     navMenu.classList.remove('active');
@@ -666,7 +761,6 @@
                 });
             });
 
-            // Close menu when clicking outside
             document.addEventListener('click', (e) => {
                 if (!navMenu.contains(e.target) && !navToggle.contains(e.target)) {
                     navMenu.classList.remove('active');
@@ -675,18 +769,16 @@
             });
         }
 
-        // Theme Toggle Functionality
+        // ===== Theme Toggle =====
         const themeToggle = document.querySelector('.theme-toggle');
         const html = document.documentElement;
         const savedTheme = localStorage.getItem('theme') || 'dark';
 
-        // Apply saved theme on load
         if (savedTheme === 'light') {
             html.setAttribute('data-theme', 'light');
             themeToggle.innerHTML = '<i class="bi bi-moon-fill"></i>';
         }
 
-        // Toggle theme on click
         themeToggle.addEventListener('click', () => {
             const currentTheme = html.getAttribute('data-theme');
 
@@ -701,7 +793,7 @@
             }
         });
 
-        // Update navbar background for light mode
+        // ===== Navbar Background =====
         function updateNavbarBackground() {
             const navbar = document.querySelector('.navbar');
             const isLight = html.getAttribute('data-theme') === 'light';
@@ -712,7 +804,6 @@
             }
         }
 
-        // Initial navbar background update
         updateNavbarBackground();
     </script>
 </body>
